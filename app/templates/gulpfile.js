@@ -6,17 +6,24 @@ var $ = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
 var reload = browserSync.reload;
 
-gulp.task('styles', function () {<% if (includeSass) { %>
-  return gulp.src('app/styles/*.scss')
-    .pipe($.sourcemaps.init())
-    .pipe($.sass({
-      outputStyle: 'nested', // libsass doesn't support expanded yet
-      precision: 10,
-      includePaths: ['.'],
-      onError: console.error.bind(console, 'Sass error:')
-    }))<% } else { %>
-  return gulp.src('app/styles/*.css')
-    .pipe($.sourcemaps.init())<% } %>
+gulp.task('preflight',['eslint']);
+
+gulp.task('eslint', function() {
+    return gulp.src('app/scripts/**/*.js')
+        .pipe($.eslint())
+        .pipe(reload({stream: true, once: true}))
+        /* Outputs hinting to console */
+        .pipe($.eslint.format())
+				//.pipe($.if(!browserSync.active, $.eslint.failOnError()))
+});
+
+gulp.task('produce',['es6','less','images','fonts']);
+
+gulp.task('package',['html'])
+
+gulp.task('less', function () {
+  return gulp.src('app/styles/*.less')
+    .pipe($.less())
     .pipe($.postcss([
       require('autoprefixer-core')({browsers: ['last 1 version']})
     ]))
@@ -25,21 +32,15 @@ gulp.task('styles', function () {<% if (includeSass) { %>
     .pipe(reload({stream: true}));
 });
 
-function jshint(files) {
-  return function () {
-    return gulp.src(files)
-      .pipe(reload({stream: true, once: true}))
-      .pipe($.jshint())
-      .pipe($.jshint.reporter('jshint-stylish'))
-      .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
-  };
-}
+gulp.task('es6', ['eslint'], function () {
+	return gulp.src('app/scripts/**/*.js')
+		.pipe($.babel())
+		.pipe(gulp.dest('.tmp/js'));
+});
 
-gulp.task('jshint', jshint('app/scripts/**/*.js'));
-gulp.task('jshint:test', jshint('test/spec/**/*.js'));
 
-gulp.task('html', ['styles'], function () {
-  var assets = $.useref.assets({searchPath: ['.tmp', 'app', '.']});
+gulp.task('html', function () {
+  var assets = $.useref.assets({searchPath: ['.tmp']});
 
   return gulp.src('app/*.html')
     .pipe(assets)
@@ -82,7 +83,7 @@ gulp.task('extras', function () {
 
 gulp.task('clean', require('del').bind(null, ['.tmp', 'dist']));
 
-gulp.task('serve', ['styles', 'fonts'], function () {
+gulp.task('serve', ['produce'], function () {
   browserSync({
     notify: false,
     port: 9000,
@@ -102,9 +103,10 @@ gulp.task('serve', ['styles', 'fonts'], function () {
     '.tmp/fonts/**/*'
   ]).on('change', reload);
 
-  gulp.watch('app/styles/**/*.<%= includeSass ? 'scss' : 'css' %>', ['styles']);
+  gulp.watch('app/styles/**/*.<%= includeLess ? 'less' : 'css' %>', ['styles']);
   gulp.watch('app/fonts/**/*', ['fonts']);
   gulp.watch('bower.json', ['wiredep', 'fonts']);
+  gulp.watch('app/scripts/**/*.js', ['es6']);
 });
 
 gulp.task('serve:dist', function () {
@@ -132,28 +134,20 @@ gulp.task('serve:test', function () {
     'test/spec/**/*.js',
   ]).on('change', reload);
 
-  gulp.watch('test/spec/**/*.js', ['jshint:test']);
 });
 
 // inject bower components
 gulp.task('wiredep', function () {
   var wiredep = require('wiredep').stream;
-<% if (includeSass) { %>
-  gulp.src('app/styles/*.scss')
+
+	gulp.src('app/*.html')
     .pipe(wiredep({
-      ignorePath: /^(\.\.\/)+/
-    }))
-    .pipe(gulp.dest('app/styles'));
-<% } %>
-  gulp.src('app/*.html')
-    .pipe(wiredep({<% if (includeSass && includeBootstrap) { %>
-      exclude: ['bootstrap-sass-official'],<% } %>
       ignorePath: /^(\.\.\/)*\.\./
     }))
     .pipe(gulp.dest('app'));
 });
 
-gulp.task('build', ['jshint', 'html', 'images', 'fonts', 'extras'], function () {
+gulp.task('build', ['eslint', 'es6', 'html', 'images', 'fonts', 'extras'], function () {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 

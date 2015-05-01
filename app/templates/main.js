@@ -1,2 +1,2 @@
-/* jshint devel:true */
-console.log('\'Allo \'Allo!');
+let allo = ()=>{console.log('\'Allo \'Allo, Mr. Anderson!');}
+allo();

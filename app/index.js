@@ -40,24 +40,20 @@ module.exports = yeoman.generators.Base.extend({
     var done = this.async();
 
     if (!this.options['skip-welcome-message']) {
-      this.log(yosay('\'Allo \'allo! Out of the box I include HTML5 Boilerplate, jQuery, and a gulpfile.js to build your app.'));
+      this.log(yosay('\'Allo \'allo! Out of the box I include HTML5 Boilerplate, ES6 and a gulpfile.js to build your app.'));
     }
 
     var prompts = [{
       type: 'checkbox',
       name: 'features',
-      message: 'What more would you like?',
+      message: 'Which optional features would you like to include?',
       choices: [{
-        name: 'Sass',
-        value: 'includeSass',
+        name: 'LESS',
+        value: 'includeLess',
         checked: true
       }, {
-        name: 'Bootstrap',
-        value: 'includeBootstrap',
-        checked: true
-      }, {
-        name: 'Modernizr',
-        value: 'includeModernizr',
+        name: 'Skeleton',
+        value: 'includeSkeleton',
         checked: true
       }]
     }];
@@ -71,9 +67,8 @@ module.exports = yeoman.generators.Base.extend({
 
       // manually deal with the response, get back and store the results.
       // we change a bit this way of doing to automatically do this in the self.prompt() method.
-      this.includeSass = hasFeature('includeSass');
-      this.includeBootstrap = hasFeature('includeBootstrap');
-      this.includeModernizr = hasFeature('includeModernizr');
+      this.includeLess = hasFeature('includeLess');
+      this.includeSkeleton = hasFeature('includeSkeleton');
 
       done();
     }.bind(this));
@@ -100,23 +95,16 @@ module.exports = yeoman.generators.Base.extend({
         dependencies: {}
       };
 
-      if (this.includeBootstrap) {
-        var bs = 'bootstrap' + (this.includeSass ? '-sass-official' : '');
-        bower.dependencies[bs] = '~3.3.1';
-      } else {
-        bower.dependencies.jquery = '~2.1.1';
-      }
-
-      if (this.includeModernizr) {
-        bower.dependencies.modernizr = '~2.8.1';
+      if (this.includeSkeleton) {
+        bower.dependencies.skeleton = '~2.0.4';
       }
 
       this.copy('bowerrc', '.bowerrc');
       this.write('bower.json', JSON.stringify(bower, null, 2));
     },
 
-    jshint: function () {
-      this.copy('jshintrc', '.jshintrc');
+    eslint: function () {
+
     },
 
     editorConfig: function () {
@@ -132,8 +120,8 @@ module.exports = yeoman.generators.Base.extend({
     mainStylesheet: function () {
       var css = 'main';
 
-      if (this.includeSass) {
-        css += '.scss';
+      if (this.includeLess) {
+        css += '.less';
       } else {
         css += '.css';
       }
@@ -144,32 +132,6 @@ module.exports = yeoman.generators.Base.extend({
     writeIndex: function () {
       this.indexFile = this.src.read('index.html');
       this.indexFile = this.engine(this.indexFile, this);
-
-      // wire Bootstrap plugins
-      if (this.includeBootstrap) {
-        var bs = '/bower_components/';
-
-        if (this.includeSass) {
-          bs += 'bootstrap-sass-official/assets/javascripts/bootstrap/';
-        } else {
-          bs += 'bootstrap/js/';
-        }
-
-        this.indexFile = this.appendScripts(this.indexFile, 'scripts/plugins.js', [
-          bs + 'affix.js',
-          bs + 'alert.js',
-          bs + 'dropdown.js',
-          bs + 'tooltip.js',
-          bs + 'modal.js',
-          bs + 'transition.js',
-          bs + 'button.js',
-          bs + 'popover.js',
-          bs + 'carousel.js',
-          bs + 'scrollspy.js',
-          bs + 'collapse.js',
-          bs + 'tab.js'
-        ]);
-      }
 
       this.indexFile = this.appendFiles({
         html: this.indexFile,
@@ -217,18 +179,18 @@ module.exports = yeoman.generators.Base.extend({
       wiredep({
         bowerJson: bowerJson,
         directory: 'bower_components',
-        exclude: ['bootstrap-sass', 'bootstrap.js'],
+        exclude: [],
         ignorePath: /^(\.\.\/)*\.\./,
         src: 'app/index.html'
       });
 
-      if (this.includeSass) {
-        // wire Bower packages to .scss
+      if (this.includeLess) {
+        // wire Bower packages to .less
         wiredep({
           bowerJson: bowerJson,
           directory: 'bower_components',
           ignorePath: /^(\.\.\/)+/,
-          src: 'app/styles/*.scss'
+          src: 'app/styles/*.less'
         });
       }
 
