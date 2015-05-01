@@ -104,7 +104,7 @@ module.exports = yeoman.generators.Base.extend({
     },
 
     eslint: function () {
-
+			this.copy('eslintrc', '.eslintrc');
     },
 
     editorConfig: function () {

@@ -27,6 +27,7 @@
     "opn": "^1.0.1",
     "wiredep": "^2.2.2",
 		"babel": "^5.2.3",
-    "gulp-babel": "^5.1.0"
+    "gulp-babel": "^5.1.0",
+	  "babel-eslint": "^3.0.1"
   }
 }
