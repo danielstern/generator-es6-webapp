@@ -9,7 +9,7 @@ var browserify = require('browserify');
 var babelify = require('babelify');
 var source = require('vinyl-source-stream');
 
-gulp.task('preflight',['eslint']);
+
 
 gulp.task('eslint', function() {
     return gulp.src('app/scripts/**/*.js')
@@ -20,12 +20,10 @@ gulp.task('eslint', function() {
 				//.pipe($.if(!browserSync.active, $.eslint.failOnError()))
 });
 
-gulp.task('produce',['wiredep','es6','less','images','fonts']);
-
-gulp.task('package',['html'])
 
 gulp.task('less', function () {
   return gulp.src('app/styles/*.less')
+		.pipe($.sourcemaps.init())
     .pipe($.less())
     .pipe($.postcss([
       require('autoprefixer-core')({browsers: ['last 1 version']})
@@ -91,6 +89,24 @@ gulp.task('extras', function () {
 
 gulp.task('clean', require('del').bind(null, ['.tmp', 'dist']));
 
+
+// inject bower components
+gulp.task('wiredep', function () {
+  var wiredep = require('wiredep').stream;
+
+	gulp.src('app/*.html')
+    .pipe(wiredep({
+//      ignorePath: /^(\.\.\/)*\.\./
+    }))
+    .pipe(gulp.dest('app'));
+});
+
+gulp.task('preflight',['eslint']);
+
+gulp.task('produce',['preflight','wiredep','es6','less','images','fonts']);
+
+gulp.task('package',['produce','html','extras']);
+
 gulp.task('serve', ['produce'], function () {
   browserSync({
     notify: false,
@@ -117,7 +133,7 @@ gulp.task('serve', ['produce'], function () {
   gulp.watch('app/scripts/**/*.js', ['es6']);
 });
 
-gulp.task('serve:dist', function () {
+gulp.task('serve:dist',['package'], function () {
   browserSync({
     notify: false,
     port: 9000,
@@ -127,7 +143,7 @@ gulp.task('serve:dist', function () {
   });
 });
 
-gulp.task('serve:test', function () {
+gulp.task('serve:test',['produce'], function () {
   browserSync({
     notify: false,
     open: false,
@@ -144,18 +160,7 @@ gulp.task('serve:test', function () {
 
 });
 
-// inject bower components
-gulp.task('wiredep', function () {
-  var wiredep = require('wiredep').stream;
-
-	gulp.src('app/*.html')
-    .pipe(wiredep({
-//      ignorePath: /^(\.\.\/)*\.\./
-    }))
-    .pipe(gulp.dest('app'));
-});
-
-gulp.task('build', ['eslint', 'es6', 'html', 'images', 'fonts', 'extras'], function () {
+gulp.task('build', ['package'], function () {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
