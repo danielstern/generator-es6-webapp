@@ -19,28 +19,16 @@
     <!-- endbuild -->
   </head>
   <body>
-    <!--[if lt IE 10]>
-      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]-->
     <% if (includeSkeleton) { %>
-    <div class="container">
-      <div class="header">
-        <ul class="nav nav-pills pull-right">
-          <li class="active"><a href="#">Home</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
-        <h3 class="text-muted"><%= appname %></h3>
-      </div>
-
-      <div class="jumbotron">
+    <div class=container>
+      <div>
         <h1>'Allo, 'Allo!</h1>
-        <p class="lead">Always a pleasure scaffolding your apps.</p>
-        <p><a class="btn btn-lg btn-success" href="#">Splendid!</a></p>
+        <h2>Always a pleasure scaffolding your apps.</h2>
+        <button>Splendid!</button>
       </div>
 
-      <div class="row marketing">
-        <div class="col-lg-6">
+      <div>
+        <div>
           <h4>HTML5 Boilerplate</h4>
           <p>HTML5 Boilerplate is a professional front-end template for building fast, robust, and adaptable web apps or sites.</p>
           <% if (includeLess) { %>
@@ -52,8 +40,8 @@
         </div>
       </div>
 
-      <div class="footer">
-        <p>♥ from Daniel Stern (based on work from the Yeoman team)</p>
+      <div>
+        <p>from Daniel Stern (based on work from the Yeoman team)</p>
       </div>
     </div>
     <% } else { %>
@@ -66,6 +54,8 @@
       </ul>
     </div>
     <% } %>
+
+    <script src='app.js'></script>
 
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->

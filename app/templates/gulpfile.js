@@ -5,6 +5,9 @@ var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
 var reload = browserSync.reload;
+var browserify = require('browserify');
+var babelify = require('babelify');
+var source = require('vinyl-source-stream');
 
 gulp.task('preflight',['eslint']);
 
@@ -17,7 +20,7 @@ gulp.task('eslint', function() {
 				//.pipe($.if(!browserSync.active, $.eslint.failOnError()))
 });
 
-gulp.task('produce',['es6','less','images','fonts']);
+gulp.task('produce',['wiredep','es6','less','images','fonts']);
 
 gulp.task('package',['html'])
 
@@ -33,9 +36,14 @@ gulp.task('less', function () {
 });
 
 gulp.task('es6', ['eslint'], function () {
-	return gulp.src('app/scripts/**/*.js')
-		.pipe($.babel())
-		.pipe(gulp.dest('.tmp/js'));
+	browserify({
+		entries:'./app/scripts/main.js',
+		debug:true
+	})
+	.transform(babelify)
+	.bundle()
+	.pipe(source('app.js'))
+	.pipe(gulp.dest('./tmp'));
 });
 
 
@@ -142,7 +150,7 @@ gulp.task('wiredep', function () {
 
 	gulp.src('app/*.html')
     .pipe(wiredep({
-      ignorePath: /^(\.\.\/)*\.\./
+//      ignorePath: /^(\.\.\/)*\.\./
     }))
     .pipe(gulp.dest('app'));
 });
