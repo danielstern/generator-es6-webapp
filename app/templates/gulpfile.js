@@ -43,7 +43,7 @@ gulp.task('es6', ['eslint'], function () {
 	.transform(babelify)
 	.bundle()
 	.pipe(source('app.js'))
-	.pipe(gulp.dest('./tmp'));
+	.pipe(gulp.dest('./.tmp'));
 });
 
 

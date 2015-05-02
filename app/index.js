@@ -136,8 +136,8 @@ module.exports = yeoman.generators.Base.extend({
       this.indexFile = this.appendFiles({
         html: this.indexFile,
         fileType: 'js',
-        optimizedPath: 'scripts/main.js',
-        sourceFileList: ['scripts/main.js']
+        optimizedPath: 'app.js',
+        sourceFileList: ['app.js']
       });
 
       this.write('app/index.html', this.indexFile);
