@@ -1,6 +1,6 @@
 {
   "name": "generator-es6-webapp",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Scaffold out a front-end web app",
   "license": "BSD",
   "repository": "danielstern/generator-es6-webapp",

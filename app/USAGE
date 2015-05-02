@@ -1,5 +1,7 @@
 Description:
-    Creates a new basic front-end web application.
+    Creates a full-features ES6 App out a Boilerplate;
+		How it works: Under the hood, it uses Babel and Browserify to transform your ES6 files into ES5 and package them into one file. 
+		Creates source maps for ES6 and for LESS.
 
 Options:
     Less: Include Less
