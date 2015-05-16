@@ -127,7 +127,7 @@ gulp.task('serve', ['produce'], function () {
     '.tmp/fonts/**/*'
   ]).on('change', reload);
 
-  gulp.watch('app/styles/**/*.<%= includeLess ? 'less' : 'css' %>', ['styles']);
+  gulp.watch('app/styles/**/*.<%= includeLess ? 'less' : 'css' %>', ['less']);
   gulp.watch('app/fonts/**/*', ['fonts']);
   gulp.watch('bower.json', ['wiredep', 'fonts']);
   gulp.watch('app/scripts/**/*.js', ['es6']);
